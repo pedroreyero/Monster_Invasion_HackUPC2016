@@ -18,15 +18,22 @@ namespace Monster_Invasion
     {
         public static int SCREEN_WIDTH = 640;
         public static int SCREEN_HEIGHT = 480;
+        public static Texture2D playerTexture;
+        public static Texture2D basicEnemyTexture;
+        public static Texture2D projectileTexture;
         
         GraphicsDeviceManager graphics;
         ContentManager content;
         SpriteBatch spriteBatch;
 
+        Player player;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
+            graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
+            content = new ContentManager(Services);
         }
 
         /// <summary>
@@ -37,7 +44,8 @@ namespace Monster_Invasion
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
+            player = new Player(Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2));
 
             base.Initialize();
         }
@@ -46,21 +54,24 @@ namespace Monster_Invasion
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
-        protected override void LoadContent()
+        protected override void LoadGraphicsContent(bool loadAllContent)
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            if (loadAllContent)
+            {
+                playerTexture = content.Load<Texture2D>(@"Textures\player");
+                player.texture = playerTexture;
+                basicEnemyTexture = content.Load<Texture2D>(@"Textures\basic_enemy");
+                projectileTexture = content.Load<Texture2D>(@"Textures\projectile");
+            }
         }
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
         /// </summary>
-        protected override void UnloadContent()
+        protected override void UnloadContent(bool unloadAllContent)
         {
-            // TODO: Unload any non ContentManager content here
+            content.Unload();
         }
 
         /// <summary>
@@ -74,7 +85,29 @@ namespace Monster_Invasion
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            // Main game loop
+            player.Update();
+
+            foreach (Enemy enemy in Enemy.enemyList)
+            {
+                enemy.Update();
+                if (HaveCollided(player, enemy))
+                {
+                    // TODO: Handle enemy - player collision consequences
+                }
+            }
+
+            foreach (Projectile projectile in Projectile.projectileList)
+            {
+                projectile.Update();
+                if (HaveCollided(player, projectile))
+                {
+                    // TODO: Handle projectile - player collision consequences
+                }
+            }
+
+            Level.Update();
+
 
             base.Update(gameTime);
         }
@@ -90,6 +123,11 @@ namespace Monster_Invasion
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
+        }
+
+        public static bool HaveCollided(GameItem gameItem1, GameItem gameItem2)
+        {
+            // TODO: Implement collision detection :)
         }
     }
 }

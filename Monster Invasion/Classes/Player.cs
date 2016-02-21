@@ -43,5 +43,10 @@ namespace Monster_Invasion
 
             base.Update();
         }
+
+        private void Shoot(Vector2 direction)
+        {
+            // TODO
+        }
     }
 }

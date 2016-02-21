@@ -6,6 +6,6 @@ namespace Monster_Invasion
 {
     class Stage
     {
-
+        // TODO: Think how to classify and use stages :)
     }
 }
